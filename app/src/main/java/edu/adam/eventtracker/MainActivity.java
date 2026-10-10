@@ -30,7 +30,7 @@ import edu.adam.eventtracker.event.Event;
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
-    List<Event> eventList = new ArrayList<>();
+    List<Event> eventList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        // Auto-returns new empty ArrayList if it couldn't read a file or if one didn't already exist
+        this.eventList.addAll(this.loadEvents());
     }
 
     private List<Event> loadEvents() {
@@ -57,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
             if (sb.length() == 0) {
                 Toast.makeText(this, "No file content could exists", Toast.LENGTH_LONG).show();
-                return null;
+                return new ArrayList<>();
             }
 
             Gson gson = new Gson();
@@ -68,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             Toast.makeText(this, "Could not load events", Toast.LENGTH_LONG).show();
         }
-        return null;
+        return new ArrayList<>();
     }
 
     private void saveEventList() {
