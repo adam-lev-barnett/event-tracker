@@ -8,6 +8,10 @@ android {
         version = release(37)
     }
 
+    buildFeatures {
+        viewBinding=true
+    }
+
     defaultConfig {
         applicationId = "edu.adam.eventtracker"
         minSdk = 33
