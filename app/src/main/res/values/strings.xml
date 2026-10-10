@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Event Tracker</string>
+    <string name="star1">1 ★☆☆☆☆</string>
+    <string name="star2">1 ★★☆☆☆</string>
+    <string name="star3">1 ★★★☆☆</string>
+    <string name="star4">1 ★★★★☆</string>
+    <string name="star5">1 ★★★★★</string>
+
 </resources>
