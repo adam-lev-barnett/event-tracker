@@ -28,6 +28,30 @@ public class Event implements Serializable {
         setRating(rating);
     }
 
+    public EventType getType() {
+        return type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
     private void setRating(int rating) {
         if (rating <= 0) this.rating = 1;
         else if (rating > 5) this.rating = 5;

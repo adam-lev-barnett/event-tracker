@@ -2,6 +2,7 @@ package edu.adam.eventtracker;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -27,10 +28,11 @@ import java.util.List;
 import edu.adam.eventtracker.databinding.ActivityMainBinding;
 import edu.adam.eventtracker.event.Event;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements View.OnClickListener, View.OnLongClickListener {
 
     private ActivityMainBinding binding;
-    List<Event> eventList;
+    List<Event> eventList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,5 +84,15 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             Toast.makeText(this, "Could not load event list", Toast.LENGTH_LONG).show();
         }
+    }
+
+    @Override
+    public void onClick(View v) {
+
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        return false;
     }
 }
