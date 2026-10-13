@@ -1,22 +1,29 @@
 package edu.adam.eventtracker;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -24,15 +31,22 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import edu.adam.eventtracker.databinding.ActivityMainBinding;
 import edu.adam.eventtracker.event.Event;
+import edu.adam.eventtracker.eventrecyclerview.EventAdapter;
 
 public class MainActivity extends AppCompatActivity
         implements View.OnClickListener, View.OnLongClickListener {
 
     private ActivityMainBinding binding;
-    List<Event> eventList = new ArrayList<>();
+    private final List<Event> eventList = new ArrayList<>();
+    private EventAdapter eventAdapter;
+    private LinearLayoutManager linearLayoutManager;
+    private ActivityResultLauncher<Intent> arl;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,13 +54,83 @@ public class MainActivity extends AppCompatActivity
         EdgeToEdge.enable(this);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        // Set main activity toolbar with menu - includes About activity and Create Event activity
+        setSupportActionBar(binding.mainActToolbar);
+        setUpRecycler();
+
         // Auto-returns new empty ArrayList if it couldn't read a file or if one didn't already exist
         this.eventList.addAll(this.loadEvents());
+
+        // To receive data back from navigating to new activity with Intent
+        arl = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(), this::handleIntentResult);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(@NonNull Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    // Separate method for cleaner code
+    private void setUpRecycler() {
+        eventAdapter = new EventAdapter(eventList, this);
+        binding.eventRecycler.setAdapter(eventAdapter);
+        linearLayoutManager = new LinearLayoutManager(this);
+        binding.eventRecycler.setLayoutManager(linearLayoutManager);
+    }
+
+    private void setUpCategorySpinner() {
+        ArrayAdapter<CharSequence> catAdapter =
+                ArrayAdapter.createFromResource(this,
+                        R.array.event_cats,
+                        android.R.layout.simple_spinner_item);
+        catAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.categorySpinner.setAdapter(catAdapter);
+
+        binding.categorySpinner.setSelection(0);
+
+        binding.categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            // Implement the event type filter; because it's only a temporary filter,
+            // it made more sense to only change the adapter so we can keep a copy of the original data
+            // and revert when the filter is cleared
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                if (position == 0) {
+                    resetFilter();
+                    return;
+                }
+                Optional<CharSequence> catStringOpt = Optional.ofNullable(catAdapter.getItem(position));
+                if (catStringOpt.isPresent()) {
+                    String catString = catStringOpt.get().toString();
+                    ArrayList<Event> tempEvents = eventList.stream()
+                            .filter(e -> catString.equals(e.getType()))
+                            .collect(Collectors.toCollection(ArrayList::new));
+                    eventAdapter.events.clear();
+                    eventAdapter.events.addAll(tempEvents);
+                    eventAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                resetFilter();
+            }
+
+            private void resetFilter() {
+                eventAdapter.events.clear();
+                eventAdapter.events.addAll(eventList);
+                eventAdapter.notifyDataSetChanged();
+            }
+        });
+
     }
 
     private List<Event> loadEvents() {
@@ -88,6 +172,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onClick(View v) {
+        int pos = binding.eventRecycler.getChildLayoutPosition(v);
+        Intent intent = new Intent(MainActivity.this, EditActivity.class);
+        Event toEdit = eventList.get(pos);
+        intent.putExtra("EDIT_EVENT", toEdit);
+        //TODO
 
     }
 
@@ -95,4 +184,22 @@ public class MainActivity extends AppCompatActivity
     public boolean onLongClick(View v) {
         return false;
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle inState) {
+        super.onRestoreInstanceState(inState);
+
+    }
+
+    private void handleIntentResult(ActivityResult res) {
+
+    }
+
+
 }

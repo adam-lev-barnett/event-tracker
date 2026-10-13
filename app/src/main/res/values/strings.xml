@@ -1,9 +1,34 @@
 <resources>
     <string name="app_name">Event Tracker</string>
+
+    <!--  Ratings  -->
     <string name="star1">1 ★☆☆☆☆</string>
     <string name="star2">1 ★★☆☆☆</string>
     <string name="star3">1 ★★★☆☆</string>
     <string name="star4">1 ★★★★☆</string>
     <string name="star5">1 ★★★★★</string>
+
+    <string name="bar">bar</string>
+
+    <!-- Event categories -->
+    <string-array name="event_cats">
+        <item>&lt;Select Event Type&gt;</item>
+        <item>Bar</item>
+        <item>Beach</item>
+        <item>Cafe</item>
+        <item>Cinema</item>
+        <item>Concert</item>
+        <item>Festival</item>
+        <item>Gallery</item>
+        <item>Hotel</item>
+        <item>Museum</item>
+        <item>Other</item>
+        <item>Park</item>
+        <item>Restaurant</item>
+        <item>Sports</item>
+        <item>Theater</item>
+    </string-array>
+
+
 
 </resources>

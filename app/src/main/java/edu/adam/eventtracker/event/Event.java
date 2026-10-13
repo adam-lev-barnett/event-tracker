@@ -1,20 +1,31 @@
 package edu.adam.eventtracker.event;
 
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.widget.ArrayAdapter;
+
 import androidx.annotation.NonNull;
 
 import com.google.gson.Gson;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+
+import edu.adam.eventtracker.R;
 
 public class Event implements Serializable {
-    private EventType type;
+    private String type;
     private String name;
     private String location;
     private String date;
     private String notes;
     private int rating;
 
-    public Event(EventType type,
+    private static final Set<CharSequence> cats = new HashSet<>();
+
+    public Event(String type,
                  String name,
                  String location,
                  String date,
@@ -26,9 +37,11 @@ public class Event implements Serializable {
         this.date = date;
         this.notes = notes;
         setRating(rating);
+
+
     }
 
-    public EventType getType() {
+    public String getType() {
         return type;
     }
 
