@@ -3,6 +3,7 @@ package edu.adam.eventtracker;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
@@ -29,6 +30,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -53,7 +55,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(R.layout.activity_main);
+        setContentView(binding.getRoot());
         ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -61,15 +63,27 @@ public class MainActivity extends AppCompatActivity
         });
 
         // Set main activity toolbar with menu - includes About activity and Create Event activity
-        setSupportActionBar(binding.mainActToolbar);
         setUpRecycler();
+        setUpCategorySpinner();
+        populateEventList();
 
-        // Auto-returns new empty ArrayList if it couldn't read a file or if one didn't already exist
-        this.eventList.addAll(this.loadEvents());
+        // Might need to set up last because recycler and spinner populate information the toolbar setup needs
+        setUpToolbar();
 
         // To receive data back from navigating to new activity with Intent
         arl = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), this::handleIntentResult);
+    }
+
+    /** Sets the support action bar and updates the "subtitle" to display "event count" with list size */
+    private void setUpToolbar() {
+        setSupportActionBar(binding.mainActToolbar);
+        updateToolbarEventCount();
+    }
+
+    // Continually updates event count when event is added, list is filtered, etc
+    private void updateToolbarEventCount() {
+        binding.mainActToolbar.setSubtitle(getString(R.string.event_count, eventAdapter.getItemCount()));
     }
 
     @Override
@@ -80,12 +94,27 @@ public class MainActivity extends AppCompatActivity
 
     // Separate method for cleaner code
     private void setUpRecycler() {
+        // LOG //
+
         eventAdapter = new EventAdapter(eventList, this);
         binding.eventRecycler.setAdapter(eventAdapter);
         linearLayoutManager = new LinearLayoutManager(this);
         binding.eventRecycler.setLayoutManager(linearLayoutManager);
+
     }
 
+    private void populateEventList() {
+        // Auto-returns new empty ArrayList if it couldn't read a file or if one didn't already exist
+        List<Event> existingEvents = this.loadEvents();
+        if (!existingEvents.isEmpty()) this.eventList.addAll(existingEvents);
+
+            // If there is no data, use the dummy event data
+        else populateRecyclerDummyData();
+
+        eventAdapter.notifyDataSetChanged();
+    }
+
+    //TODO determine if I can move this method to the adapter
     private void setUpCategorySpinner() {
         ArrayAdapter<CharSequence> catAdapter =
                 ArrayAdapter.createFromResource(this,
@@ -93,6 +122,7 @@ public class MainActivity extends AppCompatActivity
                         android.R.layout.simple_spinner_item);
         catAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.categorySpinner.setAdapter(catAdapter);
+
 
         binding.categorySpinner.setSelection(0);
 
@@ -107,16 +137,9 @@ public class MainActivity extends AppCompatActivity
                     resetFilter();
                     return;
                 }
+                // Optional was the best way I could think of to bypass yellow squigglies talking about null values
                 Optional<CharSequence> catStringOpt = Optional.ofNullable(catAdapter.getItem(position));
-                if (catStringOpt.isPresent()) {
-                    String catString = catStringOpt.get().toString();
-                    ArrayList<Event> tempEvents = eventList.stream()
-                            .filter(e -> catString.equals(e.getType()))
-                            .collect(Collectors.toCollection(ArrayList::new));
-                    eventAdapter.events.clear();
-                    eventAdapter.events.addAll(tempEvents);
-                    eventAdapter.notifyDataSetChanged();
-                }
+                catStringOpt.ifPresent(charSequence -> filterByCategory(charSequence.toString()));
             }
 
             @Override
@@ -125,17 +148,29 @@ public class MainActivity extends AppCompatActivity
             }
 
             private void resetFilter() {
-                eventAdapter.events.clear();
-                eventAdapter.events.addAll(eventList);
-                eventAdapter.notifyDataSetChanged();
+                eventAdapter.resetAdapterList(eventList);
+                updateToolbarEventCount();
+
             }
         });
 
     }
 
+    private void filterByCategory(String catString) {
+        ArrayList<Event> tempEvents = eventList.stream()
+                .filter(e -> catString.toLowerCase().equals(e.getType().toLowerCase()))
+                .collect(Collectors.toCollection(ArrayList::new));
+        eventAdapter.resetAdapterList(tempEvents);
+
+
+        eventAdapter.notifyDataSetChanged();
+        updateToolbarEventCount();
+    }
+
     private List<Event> loadEvents() {
         try (InputStream input = getApplicationContext().openFileInput("Events.json")) {
             BufferedReader br = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8));
+
             StringBuilder sb = new StringBuilder();
 
             String line;
@@ -144,7 +179,7 @@ public class MainActivity extends AppCompatActivity
             }
 
             if (sb.length() == 0) {
-                Toast.makeText(this, "No file content could exists", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.no_file_content_exists, Toast.LENGTH_LONG).show();
                 return new ArrayList<>();
             }
 
@@ -154,9 +189,9 @@ public class MainActivity extends AppCompatActivity
             Collections.addAll(tempEventList, events);
             return tempEventList;
         } catch (Exception e) {
-            Toast.makeText(this, "Could not load events", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.could_not_load_events, Toast.LENGTH_LONG).show();
+            return new ArrayList<>();
         }
-        return new ArrayList<>();
     }
 
     private void saveEventList() {
@@ -166,7 +201,7 @@ public class MainActivity extends AppCompatActivity
             printer.print(eventList.toString());
             printer.close();
         } catch (Exception e) {
-            Toast.makeText(this, "Could not load event list", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.could_not_save_event_list, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -199,6 +234,29 @@ public class MainActivity extends AppCompatActivity
 
     private void handleIntentResult(ActivityResult res) {
 
+    }
+
+    // Testing recycler with dummy data
+    private void populateRecyclerDummyData() {
+        List<Event> events = Arrays.asList(
+                new Event("CAFE", "Morning Coffee Meetup", "Blue Bottle Cafe", "2026-10-18", "Catching up with old friends", 4),
+                new Event("PARK", "Weekend Picnic", "Millennium Park", "2026-10-19", "Enjoying the autumn weather", 5),
+                new Event("CINEMA", "Movie Night", "AMC Downtown", "2026-10-20", "Watching the latest sci-fi release", 3),
+                new Event("RESTAURANT", "Dinner with Colleagues", "Trattoria Roma", "2026-10-22", "Celebrating project launch", 5),
+                new Event("CONCERT", "Rock Band Live", "City Arena", "2026-10-25", "Front row tickets", 4),
+                new Event("MUSEUM", "Modern Art Exhibition", "Metropolitan Museum", "2026-10-27", "Exploring abstract paintings", 4),
+                new Event("BAR", "Trivia Night", "The Local Pub", "2026-10-28", "Came in second place", 4),
+                new Event("BEACH", "Sunset Walk", "South Beach", "2026-10-30", "Relaxing by the water", 5),
+                new Event("THEATER", "Shakespearean Play", "State Playhouse", "2026-11-02", "Fantastic acting and stage design", 5),
+                new Event("SPORTS", "Football Match", "City Stadium", "2026-11-05", "Home team won in overtime", 4)
+        );
+        this.eventList.addAll(events);
+    }
+
+    @Override
+    public void onStop() {
+        saveEventList();
+        super.onStop();
     }
 
 

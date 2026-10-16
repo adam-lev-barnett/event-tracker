@@ -23,7 +23,6 @@ public class Event implements Serializable {
     private String notes;
     private int rating;
 
-    private static final Set<CharSequence> cats = new HashSet<>();
 
     public Event(String type,
                  String name,
@@ -31,14 +30,12 @@ public class Event implements Serializable {
                  String date,
                  String notes,
                  int rating) {
-        this.type = type;
         this.name = name;
         this.location = location;
         this.date = date;
         this.notes = notes;
         setRating(rating);
-
-
+        setType(type);
     }
 
     public String getType() {
@@ -69,6 +66,14 @@ public class Event implements Serializable {
         if (rating <= 0) this.rating = 1;
         else if (rating > 5) this.rating = 5;
         else this.rating = rating;
+    }
+
+    // Ensures that the event type string comes out with the first letter capitalized
+    private void setType(String eventType) {
+        if (eventType != null && !eventType.isEmpty()) {
+            this.type = Character.toUpperCase(eventType.charAt(0)) +
+                    eventType.substring(1).toLowerCase();
+        }
     }
 
     @NonNull

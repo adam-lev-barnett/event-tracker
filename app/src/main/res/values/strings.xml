@@ -1,14 +1,19 @@
 <resources>
     <string name="app_name">Event Tracker</string>
+    <string name="event_count">Event Count: %d</string>
 
     <!--  Ratings  -->
     <string name="star1">1 ★☆☆☆☆</string>
-    <string name="star2">1 ★★☆☆☆</string>
-    <string name="star3">1 ★★★☆☆</string>
-    <string name="star4">1 ★★★★☆</string>
-    <string name="star5">1 ★★★★★</string>
+    <string name="star2">2 ★★☆☆☆</string>
+    <string name="star3">3 ★★★☆☆</string>
+    <string name="star4">4 ★★★★☆</string>
+    <string name="star5">5 ★★★★★</string>
 
     <string name="bar">bar</string>
+    <string name="todo">TODO</string>
+    <string name="no_file_content_exists">No file content could exists</string>
+    <string name="could_not_load_events">Could not load events</string>
+    <string name="could_not_save_event_list">Could not save event list</string>
 
     <!-- Event categories -->
     <string-array name="event_cats">
