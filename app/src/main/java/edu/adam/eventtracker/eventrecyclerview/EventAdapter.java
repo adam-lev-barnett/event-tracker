@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import edu.adam.eventtracker.MainActivity;
 import edu.adam.eventtracker.R;
@@ -20,14 +21,13 @@ import edu.adam.eventtracker.event.Event;
 public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
     public List<Event> events;
     private final MainActivity mainAct;
-    private FilterType filter;
+
+    private boolean activeTypeFilter = false;
+    private boolean activeRatingFilter = false;
 
     public EventAdapter(List<Event> eventList, MainActivity mainAct) {
         this.events = (eventList == null) ? new ArrayList<>() : new ArrayList<>(eventList);
         this.mainAct = mainAct;
-        // Default is to display full list; filtering handled locally with onBind
-        this.filter = FilterType.NONE;
-
     }
 
     @NonNull
@@ -68,7 +68,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
     }
 
     // Used for fully updating the adapter's collection or filtering
-    public void resetAdapterList(List<Event> newList) {
+    private void resetAdapterList(List<Event> newList) {
         if (newList != null) {
             this.events.clear();
             this.events.addAll(newList);
@@ -76,11 +76,26 @@ public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
         }
     }
 
+    /** Method specifically called by activity for completely resetting the filters. Passes original list */
+    public void clearFilters(List<Event> ogList) {
+        resetAdapterList(ogList);
+    }
 
+    public void filterByCategory(String cat) {
+        ArrayList<Event> tempEvents = events.stream()
+                .filter(e -> cat.equalsIgnoreCase(e.getType()))
+                .collect(Collectors.toCollection(ArrayList::new));
+        resetAdapterList(tempEvents);
+    }
 
     @Override
     public int getItemCount() {
         return events.size();
     }
+
+
+
+
+
 
 }

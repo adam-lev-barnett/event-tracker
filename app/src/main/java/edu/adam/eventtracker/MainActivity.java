@@ -83,7 +83,9 @@ public class MainActivity extends AppCompatActivity
 
     // Continually updates event count when event is added, list is filtered, etc
     private void updateToolbarEventCount() {
-        binding.mainActToolbar.setSubtitle(getString(R.string.event_count, eventAdapter.getItemCount()));
+        binding.mainActToolbar
+                .setSubtitle(
+                        getString(R.string.event_count, eventAdapter.getItemCount()));
     }
 
     @Override
@@ -114,7 +116,6 @@ public class MainActivity extends AppCompatActivity
         eventAdapter.notifyDataSetChanged();
     }
 
-    //TODO determine if I can move this method to the adapter
     private void setUpCategorySpinner() {
         ArrayAdapter<CharSequence> catAdapter =
                 ArrayAdapter.createFromResource(this,
@@ -148,24 +149,19 @@ public class MainActivity extends AppCompatActivity
             }
 
             private void resetFilter() {
-                eventAdapter.resetAdapterList(eventList);
+                eventAdapter.clearFilters(eventList);
                 updateToolbarEventCount();
-
             }
+            private void filterByCategory(String catString) {
+                eventAdapter.filterByCategory(catString);
+                updateToolbarEventCount();
+            }
+
         });
 
     }
 
-    private void filterByCategory(String catString) {
-        ArrayList<Event> tempEvents = eventList.stream()
-                .filter(e -> catString.toLowerCase().equals(e.getType().toLowerCase()))
-                .collect(Collectors.toCollection(ArrayList::new));
-        eventAdapter.resetAdapterList(tempEvents);
 
-
-        eventAdapter.notifyDataSetChanged();
-        updateToolbarEventCount();
-    }
 
     private List<Event> loadEvents() {
         try (InputStream input = getApplicationContext().openFileInput("Events.json")) {
