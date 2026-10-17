@@ -1,8 +1,5 @@
 package edu.adam.eventtracker.eventrecyclerview;
 
-import static androidx.core.content.ContextCompat.getString;
-
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -11,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import edu.adam.eventtracker.MainActivity;
 import edu.adam.eventtracker.R;
@@ -22,8 +18,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
     public List<Event> events;
     private final MainActivity mainAct;
 
-    private boolean activeTypeFilter = false;
-    private boolean activeRatingFilter = false;
+
 
     public EventAdapter(List<Event> eventList, MainActivity mainAct) {
         this.events = (eventList == null) ? new ArrayList<>() : new ArrayList<>(eventList);
@@ -74,18 +69,12 @@ public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
             this.events.addAll(newList);
             this.notifyDataSetChanged();
         }
+
     }
 
     /** Method specifically called by activity for completely resetting the filters. Passes original list */
-    public void clearFilters(List<Event> ogList) {
+    public void setFilters(List<Event> ogList) {
         resetAdapterList(ogList);
-    }
-
-    public void filterByCategory(String cat) {
-        ArrayList<Event> tempEvents = events.stream()
-                .filter(e -> cat.equalsIgnoreCase(e.getType()))
-                .collect(Collectors.toCollection(ArrayList::new));
-        resetAdapterList(tempEvents);
     }
 
     @Override

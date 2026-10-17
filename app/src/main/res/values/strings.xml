@@ -9,6 +9,15 @@
     <string name="star4">4 ★★★★☆</string>
     <string name="star5">5 ★★★★★</string>
 
+    <string-array name="event_ratings">
+        <item>&lt;Select Star Rating&gt;</item>
+        <item>@string/star1</item>
+        <item>@string/star2</item>
+        <item>@string/star3</item>
+        <item>@string/star4</item>
+        <item>@string/star5</item>
+    </string-array>
+
     <string name="bar">bar</string>
     <string name="todo">TODO</string>
     <string name="no_file_content_exists">No file content could exists</string>

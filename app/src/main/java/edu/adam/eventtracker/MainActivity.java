@@ -3,7 +3,6 @@ package edu.adam.eventtracker;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
@@ -64,8 +63,9 @@ public class MainActivity extends AppCompatActivity
 
         // Set main activity toolbar with menu - includes About activity and Create Event activity
         setUpRecycler();
-        setUpCategorySpinner();
         populateEventList();
+        setUpCategorySpinner();
+        setUpRatingSpinner();
 
         // Might need to set up last because recycler and spinner populate information the toolbar setup needs
         setUpToolbar();
@@ -133,35 +133,67 @@ public class MainActivity extends AppCompatActivity
             // and revert when the filter is cleared
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                if (position == 0) {
-                    resetFilter();
-                    return;
-                }
-                // Optional was the best way I could think of to bypass yellow squigglies talking about null values
-                Optional<CharSequence> catStringOpt = Optional.ofNullable(catAdapter.getItem(position));
-                catStringOpt.ifPresent(charSequence -> filterByCategory(charSequence.toString()));
+                applyFilters();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                resetFilter();
-            }
-
-            private void resetFilter() {
-                eventAdapter.clearFilters(eventList);
-                updateToolbarEventCount();
-            }
-            private void filterByCategory(String catString) {
-                eventAdapter.filterByCategory(catString);
-                updateToolbarEventCount();
+                applyFilters();
             }
 
         });
 
     }
 
+    private void setUpRatingSpinner() {
+        ArrayAdapter<CharSequence> rateAdapter =
+                ArrayAdapter.createFromResource(this,
+                        R.array.event_ratings,
+                        android.R.layout.simple_spinner_item);
+        rateAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.ratingSpinner.setAdapter(rateAdapter);
 
+
+        binding.ratingSpinner.setSelection(0);
+
+        binding.ratingSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            // Implement the event type filter; because it's only a temporary filter,
+            // it made more sense to only change the adapter so we can keep a copy of the original data
+            // and revert when the filter is cleared
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // We can use position as the int value to pass to the adapter to avoid string parsing
+                applyFilters();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Re-evaluates the filter status
+                applyFilters();
+            }
+
+        });
+
+    }
+
+    private void applyFilters() {
+        int catPos = binding.categorySpinner.getSelectedItemPosition();
+        int selectedRating = binding.ratingSpinner.getSelectedItemPosition();
+
+        String selectedCategory = (catPos > 0)
+                ? binding.categorySpinner.getSelectedItem().toString()
+                : null;
+
+        List<Event> filtered = eventList.stream()
+                .filter(e -> selectedCategory == null ||
+                        selectedCategory.equalsIgnoreCase(e.getType()))
+                .filter(e -> selectedRating == 0 ||
+                        e.getRating() >= selectedRating)
+                .collect(Collectors.toList());
+
+        eventAdapter.setFilters(filtered);
+        updateToolbarEventCount();
+    }
 
     private List<Event> loadEvents() {
         try (InputStream input = getApplicationContext().openFileInput("Events.json")) {
