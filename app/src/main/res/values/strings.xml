@@ -23,6 +23,9 @@
     <string name="no_file_content_exists">No file content could exists</string>
     <string name="could_not_load_events">Could not load events</string>
     <string name="could_not_save_event_list">Could not save event list</string>
+    <string name="about_button">about_button</string>
+    <string name="add_event_button">add_event_button</string>
+    <string name="save_icon">save_icon</string>
 
     <!-- Event categories -->
     <string-array name="event_cats">

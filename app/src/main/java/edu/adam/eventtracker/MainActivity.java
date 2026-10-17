@@ -198,6 +198,10 @@ public class MainActivity extends AppCompatActivity
         updateToolbarEventCount();
     }
 
+    private void clearFilters() {
+        this.eventAdapter.setFilters(eventList);
+    }
+
     private List<Event> loadEvents() {
         try (InputStream input = getApplicationContext().openFileInput("Events.json")) {
             BufferedReader br = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8));

@@ -2,11 +2,13 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/about_button"
         android:icon="@drawable/help"
-        android:title="Item"
+        android:title="@string/about_button"
         app:showAsAction="always" />
     <item
+        android:id="@+id/add_event_button"
         android:icon="@drawable/add"
-        android:title="Item"
+        android:title="@string/add_event_button"
         app:showAsAction="always" />
 </menu>

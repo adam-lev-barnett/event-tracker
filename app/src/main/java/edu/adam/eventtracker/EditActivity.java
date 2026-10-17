@@ -1,8 +1,11 @@
 package edu.adam.eventtracker;
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -26,5 +29,19 @@ public class EditActivity extends AppCompatActivity {
             return insets;
         });
         setSupportActionBar(binding.editActToolbar);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(@NonNull Menu menu) {
+        getMenuInflater().inflate(R.menu.edit_menu, menu);
+        return true;
+    }
+
+    // Technically only one item, so can default to on-click. But for the sake of extensibility
+    //TODO make clickable
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        return super.onOptionsItemSelected(item);
     }
 }

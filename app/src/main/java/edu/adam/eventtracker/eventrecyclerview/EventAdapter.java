@@ -63,7 +63,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
     }
 
     // Used for fully updating the adapter's collection or filtering
-    private void resetAdapterList(List<Event> newList) {
+    private void modifyAdapterList(List<Event> newList) {
         if (newList != null) {
             this.events.clear();
             this.events.addAll(newList);
@@ -74,7 +74,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
 
     /** Method specifically called by activity for completely resetting the filters. Passes original list */
     public void setFilters(List<Event> ogList) {
-        resetAdapterList(ogList);
+        modifyAdapterList(ogList);
     }
 
     @Override
