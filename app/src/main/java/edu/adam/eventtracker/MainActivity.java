@@ -15,6 +15,7 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -97,13 +98,10 @@ public class MainActivity extends AppCompatActivity
 
     // Separate method for cleaner code
     private void setUpRecycler() {
-        // LOG //
-
         eventAdapter = new EventAdapter(eventList, this);
         binding.eventRecycler.setAdapter(eventAdapter);
         linearLayoutManager = new LinearLayoutManager(this);
         binding.eventRecycler.setLayoutManager(linearLayoutManager);
-
     }
 
     private void populateEventList() {
@@ -111,7 +109,7 @@ public class MainActivity extends AppCompatActivity
         List<Event> existingEvents = this.loadEvents();
         if (!existingEvents.isEmpty()) this.eventList.addAll(existingEvents);
 
-            // If there is no data, use the dummy event data
+        // If there is no data, use the dummy event data
         else populateRecyclerDummyData();
 
         eventAdapter.notifyDataSetChanged();
@@ -252,13 +250,36 @@ public class MainActivity extends AppCompatActivity
         int pos = binding.eventRecycler.getChildLayoutPosition(v);
         Intent intent = new Intent(MainActivity.this, EditActivity.class);
         Event toEdit = eventList.get(pos);
-        intent.putExtra("EDIT_EVENT", toEdit);
-        //TODO
+        intent.putExtra(getString(R.string.edit_event), toEdit);
+        arl.launch(intent);
     }
 
+    /** Deletes the item selected from the RecyclerView*/
     @Override
     public boolean onLongClick(View v) {
-        return false;
+        int pos = binding.eventRecycler.getChildLayoutPosition(v);
+        if (pos < 0) {
+            Log.d(TAG, getString(R.string.invalid_selection));
+        }
+        new AlertDialog.Builder(this)
+            .setTitle(R.string.delete_event)
+            .setMessage(getString(R.string.delete_confirm) + eventList.get(pos).getName())
+                // Cancelling the action just closes the dialog
+            .setNegativeButton(getString(R.string.cancel), null)
+            .setPositiveButton(getString(
+                    R.string.confirm),
+                    (dialog, which) -> removeEvent(pos))
+            .show();
+        return true;
+    }
+
+    public void removeEvent(int i) {
+        if (i < 0) {
+            Log.d(TAG, getString(R.string.could_not_delete_bad_index));
+            return;
+        }
+        eventList.remove(i);
+        eventAdapter.notifyItemRemoved(i);
     }
 
     @Override

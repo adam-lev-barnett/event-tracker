@@ -31,6 +31,15 @@
     <string name="intent_result_is_null">Intent result is null</string>
     <string name="event_not_saved">Could not save event</string>
     <string name="saved_event">SAVED_EVENT</string>
+    <string name="edit_event">EDIT_EVENT</string>
+    <string name="could_not_delete_bad_index">Could not delete event because of bad position identifier</string>
+    <string name="delete_event">Delete Event</string>
+    <string name="invalid_selection">Invalid selection</string>
+    <string name="delete_confirm">Are you sure you want to delete </string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
+
+
 
     <!-- Event categories -->
     <string-array name="event_cats">
