@@ -176,14 +176,17 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    /** Blanket filter setter to determine which filters are actually set;
+     * Covers edge case involving setting both filters and removing only one */
     private void applyFilters() {
-        int catPos = binding.categorySpinner.getSelectedItemPosition();
+        int selectedEventType = binding.categorySpinner.getSelectedItemPosition();
         int selectedRating = binding.ratingSpinner.getSelectedItemPosition();
 
-        String selectedCategory = (catPos > 0)
+        String selectedCategory = (selectedEventType > 0)
                 ? binding.categorySpinner.getSelectedItem().toString()
                 : null;
 
+        // Logical OR short circuits to no filters applied by default
         List<Event> filtered = eventList.stream()
                 .filter(e -> selectedCategory == null ||
                         selectedCategory.equalsIgnoreCase(e.getType()))
