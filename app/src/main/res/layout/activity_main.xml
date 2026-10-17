@@ -45,6 +45,7 @@
         android:layout_height="0dp"
         android:layout_marginEnd="8dp"
         android:contentDescription="@string/todo"
+        android:onClick="clearFilters"
         android:scaleType="center"
         app:layout_constraintBottom_toBottomOf="@+id/rating_spinner"
         app:layout_constraintEnd_toEndOf="parent"

@@ -18,6 +18,7 @@
         <item>@string/star5</item>
     </string-array>
 
+    <string name="main_activity">Main Activity</string>
     <string name="bar">bar</string>
     <string name="todo">TODO</string>
     <string name="no_file_content_exists">No file content could exists</string>
@@ -26,6 +27,10 @@
     <string name="about_button">about_button</string>
     <string name="add_event_button">add_event_button</string>
     <string name="save_icon">save_icon</string>
+    <string name="save_event">SAVE_EVENT</string>
+    <string name="intent_result_is_null">Intent result is null</string>
+    <string name="event_not_saved">Could not save event</string>
+    <string name="saved_event">SAVED_EVENT</string>
 
     <!-- Event categories -->
     <string-array name="event_cats">

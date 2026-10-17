@@ -3,6 +3,7 @@ package edu.adam.eventtracker;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
@@ -32,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import edu.adam.eventtracker.databinding.ActivityMainBinding;
@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity
     private EventAdapter eventAdapter;
     private LinearLayoutManager linearLayoutManager;
     private ActivityResultLauncher<Intent> arl;
+    private String TAG = getString(R.string.main_activity);
 
 
     @Override
@@ -72,7 +73,7 @@ public class MainActivity extends AppCompatActivity
 
         // To receive data back from navigating to new activity with Intent
         arl = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(), this::handleIntentResult);
+                new ActivityResultContracts.StartActivityForResult(), this::handleSaveIntentResult);
     }
 
     /** Sets the support action bar and updates the "subtitle" to display "event count" with list size */
@@ -123,8 +124,6 @@ public class MainActivity extends AppCompatActivity
                         android.R.layout.simple_spinner_item);
         catAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.categorySpinner.setAdapter(catAdapter);
-
-
         binding.categorySpinner.setSelection(0);
 
         binding.categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -135,14 +134,11 @@ public class MainActivity extends AppCompatActivity
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 applyFilters();
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 applyFilters();
             }
-
         });
-
     }
 
     private void setUpRatingSpinner() {
@@ -152,8 +148,6 @@ public class MainActivity extends AppCompatActivity
                         android.R.layout.simple_spinner_item);
         rateAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.ratingSpinner.setAdapter(rateAdapter);
-
-
         binding.ratingSpinner.setSelection(0);
 
         binding.ratingSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -171,9 +165,7 @@ public class MainActivity extends AppCompatActivity
                 // Re-evaluates the filter status
                 applyFilters();
             }
-
         });
-
     }
 
     /** Blanket filter setter to determine which filters are actually set;
@@ -198,7 +190,7 @@ public class MainActivity extends AppCompatActivity
         updateToolbarEventCount();
     }
 
-    private void clearFilters() {
+    public void clearFilters(View v) {
         this.eventAdapter.setFilters(eventList);
     }
 
@@ -239,6 +231,21 @@ public class MainActivity extends AppCompatActivity
             Toast.makeText(this, R.string.could_not_save_event_list, Toast.LENGTH_LONG).show();
         }
     }
+    private void handleSaveIntentResult(ActivityResult res) {
+        if (res == null || res.getData() == null) {
+            Log.d(TAG, getString(R.string.intent_result_is_null));
+        }
+        else {
+            Intent data = res.getData();
+            if (res.getResultCode() == RESULT_OK) {
+                Event event = data.getSerializableExtra(getString(R.string.saved_event), Event.class);
+                if (event != null) eventList.add(event);
+                saveEventList();
+                return;
+            }
+        }
+        Toast.makeText(this, R.string.event_not_saved, Toast.LENGTH_LONG).show();
+    }
 
     @Override
     public void onClick(View v) {
@@ -247,7 +254,6 @@ public class MainActivity extends AppCompatActivity
         Event toEdit = eventList.get(pos);
         intent.putExtra("EDIT_EVENT", toEdit);
         //TODO
-
     }
 
     @Override
@@ -267,11 +273,12 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void handleIntentResult(ActivityResult res) {
-
+    @Override
+    public void onStop() {
+        saveEventList();
+        super.onStop();
     }
 
-    // Testing recycler with dummy data
     private void populateRecyclerDummyData() {
         List<Event> events = Arrays.asList(
                 new Event("CAFE", "Morning Coffee Meetup", "Blue Bottle Cafe", "2026-10-18", "Catching up with old friends", 4),
@@ -286,12 +293,6 @@ public class MainActivity extends AppCompatActivity
                 new Event("SPORTS", "Football Match", "City Stadium", "2026-11-05", "Home team won in overtime", 4)
         );
         this.eventList.addAll(events);
-    }
-
-    @Override
-    public void onStop() {
-        saveEventList();
-        super.onStop();
     }
 
 
