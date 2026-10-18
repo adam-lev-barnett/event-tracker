@@ -3,19 +3,13 @@
     <string name="event_count">Event Count: %d</string>
 
     <!--  Ratings  -->
-    <string name="star1">1 ★☆☆☆☆</string>
-    <string name="star2">2 ★★☆☆☆</string>
-    <string name="star3">3 ★★★☆☆</string>
-    <string name="star4">4 ★★★★☆</string>
-    <string name="star5">5 ★★★★★</string>
 
     <string-array name="event_ratings">
-        <item>&lt;Select Star Rating&gt;</item>
-        <item>@string/star1</item>
-        <item>@string/star2</item>
-        <item>@string/star3</item>
-        <item>@string/star4</item>
-        <item>@string/star5</item>
+        <string name="star1">1 ★☆☆☆☆</string>
+        <string name="star2">2 ★★☆☆☆</string>
+        <string name="star3">3 ★★★☆☆</string>
+        <string name="star4">4 ★★★★☆</string>
+        <string name="star5">5 ★★★★★</string>
     </string-array>
 
     <string name="main_activity">Main Activity</string>
@@ -42,12 +36,17 @@
     <string name="INDEX">index</string>
     <string name="edit_activity">EDIT_ACTIVITY</string>
     <string name="invalid_edit_position">Invalid index position provided for edited event</string>
-
+    <string name="write_any_notes_here">Write any notes here</string>
+    <string name="mm_dd_yyyy">MM/DD/YYYY</string>
+    <string name="address">Address</string>
+    <string name="event_name">Event name</string>
+    <string name="date_format">^\\d{2}/\\d{2}/\\d{4}$</string>
+    <string name="date_time_parse_format">MM/dd/uuuu</string>
+    <string name="please_fill_out_the_requested_fields">Please fill out the requested fields</string>
 
 
     <!-- Event categories -->
     <string-array name="event_cats">
-        <item>&lt;Select Event Type&gt;</item>
         <item>Bar</item>
         <item>Beach</item>
         <item>Cafe</item>

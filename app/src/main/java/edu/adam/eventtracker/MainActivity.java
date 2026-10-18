@@ -149,9 +149,7 @@ public class MainActivity extends AppCompatActivity
         binding.ratingSpinner.setSelection(0);
 
         binding.ratingSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            // Implement the event type filter; because it's only a temporary filter,
-            // it made more sense to only change the adapter so we can keep a copy of the original data
-            // and revert when the filter is cleared
+
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 // We can use position as the int value to pass to the adapter to avoid string parsing
@@ -172,15 +170,14 @@ public class MainActivity extends AppCompatActivity
         int selectedEventType = binding.categorySpinner.getSelectedItemPosition();
         int selectedRating = binding.ratingSpinner.getSelectedItemPosition();
 
-        String selectedCategory = (selectedEventType > 0)
-                ? binding.categorySpinner.getSelectedItem().toString()
-                : null;
+        String selectedCategory = (selectedEventType >= 0) ?
+                binding.categorySpinner.getSelectedItem().toString() : null;
 
-        // Logical OR short circuits to no filters applied by default
+        // OR short circuits to no filters - applied by default
         List<Event> filtered = eventList.stream()
                 .filter(e -> selectedCategory == null ||
                         selectedCategory.equalsIgnoreCase(e.getType()))
-                .filter(e -> selectedRating == 0 ||
+                .filter(e -> selectedRating < 0 ||
                         e.getRating() >= selectedRating)
                 .collect(Collectors.toList());
 

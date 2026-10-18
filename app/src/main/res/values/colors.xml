@@ -2,4 +2,6 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="edit_activity_bg">#B2EBF2</color>
+    <color name="error_field">#D00000</color>
 </resources>

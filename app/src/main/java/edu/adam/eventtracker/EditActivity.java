@@ -8,14 +8,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
+import java.util.regex.Pattern;
 
 import edu.adam.eventtracker.databinding.ActivityEditBinding;
 import edu.adam.eventtracker.event.Event;
@@ -24,7 +30,9 @@ public class EditActivity extends AppCompatActivity {
 
     private ActivityEditBinding binding;
     private Event event;
-    String TAG = getString(R.string.edit_activity);
+    private final String TAG = getString(R.string.edit_activity);
+    private Intent intent;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,11 +49,18 @@ public class EditActivity extends AppCompatActivity {
         setUpEventTypeSpinner();
         setUpEventStarsSpinner();
 
-        Intent intent = new Intent();
-        event = intent.getSerializableExtra(getString(R.string.edit_event), Event.class);
+        intent = getIntent();
+        if (intent != null) {
+            // Will finish with a cancel status if null checks, etc. fail
+            populateFields();
+            event = intent.getSerializableExtra(getString(R.string.edit_event), Event.class);
+        }
 
-        // Will finish with a cancel status if null checks, etc. fail
-        populateFields(intent);
+        else {
+            intent = new Intent();
+        }
+
+
 
     }
 
@@ -62,16 +77,13 @@ public class EditActivity extends AppCompatActivity {
         binding.editEventTypeSpinner.setAdapter(eventTypeAdapter);
 
         binding.editEventTypeSpinner.setSelection(0);
+
+        // This doesn't need to do anything because all it does is select the item
         binding.editEventTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-            }
-
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {}
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
     }
 
@@ -82,16 +94,13 @@ public class EditActivity extends AppCompatActivity {
         binding.editEventTypeSpinner.setAdapter(eventTypeAdapter);
 
         binding.editEventTypeSpinner.setSelection(0);
+
+        // This doesn't need to do anything because all it does is select the item
         binding.editEventTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-            }
-
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {}
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
     }
 
@@ -99,13 +108,15 @@ public class EditActivity extends AppCompatActivity {
     //TODO make clickable
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
+        if (item.getItemId() == R.id.save_icon) {
+            boolean isNewEvent = intent.hasExtra(getString(R.string.INDEX));
+            else editEvent();
+        }
         return super.onOptionsItemSelected(item);
     }
 
     /** Populates existing fields on loading if editing an existing event */
-    private void populateFields(Intent intent) {
-
+    private void populateFields() {
         // If it can't deserialize
         if (event != null) {
             // Maintain event's position in list
@@ -122,13 +133,95 @@ public class EditActivity extends AppCompatActivity {
             binding.eventNameField.setText(event.getName());
             binding.eventAddressField.setText(event.getLocation());
             binding.eventDateField.setText(event.getDate());
-            binding.notesField.setText(event.getNotes());
+            binding.eventNotesField.setText(event.getNotes());
         }
-
     }
 
-    public void createEvent() {
+    public void editEvent() {
+        String name = binding.eventNameField.getText().toString().trim();
+        String date = binding.eventDateField.getText().toString().trim();
+        String address = binding.eventAddressField.getText().toString().trim();
+        String type = binding.editEventTypeSpinner.getSelectedItem().toString();
+        if (!validateAndHighlightForm(name, date, address, type)) return;
 
+        String notes = binding.eventNotesField.getText().toString().trim();
+        int rating = binding.editStarsSpinner.getSelectedItemPosition();
+
+        // a new event won't have a position from the recyclerview yet
+        boolean isNewEvent = intent.hasExtra(getString(R.string.INDEX));
+
+
+        if (!isNewEvent) {
+            event.setRating(rating);
+            event.setName(name);
+            event.setDate(date);
+            event.setLocation(address);
+            event.setType(type);
+            event.setNotes(notes);
+        }
+        else {
+            this.event = new Event(type, name, address, date, notes, rating);
+        }
+
+        Intent returnData = new Intent();
+        returnData.putExtra(getString(R.string.edit_event), this.event);
+        setResult(RESULT_OK, returnData);
+        finish();
+    }
+
+    private boolean validateAndHighlightForm(String name, String date, String address, String type) {
+        boolean isValid = true;
+
+        if (name.isEmpty()) {
+            binding.eventNameField.setBackgroundResource(R.drawable.error_edit_text_border);
+            isValid = false;
+        } else {
+            binding.eventNameField.setBackgroundResource(R.drawable.normal_edit_text_border);
+        }
+
+        if (!validateDate(date)) {
+            binding.eventDateField.setBackgroundResource(R.drawable.error_edit_text_border);
+            isValid = false;
+        } else {
+            binding.eventDateField.setBackgroundResource(R.drawable.normal_edit_text_border);
+        }
+
+        if (address.isEmpty()) {
+            binding.eventAddressField.setBackgroundResource(R.drawable.error_edit_text_border);
+            isValid = false;
+        } else {
+            binding.eventAddressField.setBackgroundResource(R.drawable.normal_edit_text_border);
+        }
+
+        if (type.isEmpty()) isValid = false;
+
+        // User Feedback
+        if (!isValid) {
+            Toast.makeText(this,
+                    R.string.please_fill_out_the_requested_fields,
+                    Toast.LENGTH_LONG).show();
+        }
+
+        return isValid;
+    }
+
+
+
+    private boolean validateDate(String date) {
+        Pattern pattern = Pattern.compile(getString(R.string.date_format));
+
+        DateTimeFormatter formatter = DateTimeFormatter
+                .ofPattern(getString(R.string.date_time_parse_format))
+                .withResolverStyle(ResolverStyle.STRICT);
+
+        if (date == null || !pattern.matcher(date.trim()).matches()) return false;
+
+        try {
+            LocalDate.parse(date.trim(), formatter);
+            return true;
+        } catch (DateTimeParseException e) {
+            return false;
+        }
     }
 
 
