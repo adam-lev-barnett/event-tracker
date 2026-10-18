@@ -38,6 +38,10 @@
     <string name="delete_confirm">Are you sure you want to delete </string>
     <string name="cancel">Cancel</string>
     <string name="confirm">Confirm</string>
+    <string name="IS_NEW_EVENT">isNewEvent</string>
+    <string name="INDEX">index</string>
+    <string name="edit_activity">EDIT_ACTIVITY</string>
+    <string name="invalid_edit_position">Invalid index position provided for edited event</string>
 
 
 

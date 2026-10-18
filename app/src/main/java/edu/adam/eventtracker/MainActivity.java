@@ -229,6 +229,7 @@ public class MainActivity extends AppCompatActivity
             Toast.makeText(this, R.string.could_not_save_event_list, Toast.LENGTH_LONG).show();
         }
     }
+    //TODO this only works for adding a new event
     private void handleSaveIntentResult(ActivityResult res) {
         if (res == null || res.getData() == null) {
             Log.d(TAG, getString(R.string.intent_result_is_null));
@@ -237,8 +238,9 @@ public class MainActivity extends AppCompatActivity
             Intent data = res.getData();
             if (res.getResultCode() == RESULT_OK) {
                 Event event = data.getSerializableExtra(getString(R.string.saved_event), Event.class);
-                if (event != null) eventList.add(event);
+                if (event != null) eventList.add(0, event);
                 saveEventList();
+                binding.eventRecycler.scrollToPosition(0);
                 return;
             }
         }
@@ -251,6 +253,7 @@ public class MainActivity extends AppCompatActivity
         Intent intent = new Intent(MainActivity.this, EditActivity.class);
         Event toEdit = eventList.get(pos);
         intent.putExtra(getString(R.string.edit_event), toEdit);
+        intent.putExtra("INDEX", pos);
         arl.launch(intent);
     }
 
@@ -280,6 +283,7 @@ public class MainActivity extends AppCompatActivity
         }
         eventList.remove(i);
         eventAdapter.notifyItemRemoved(i);
+        if (i >= eventList.size()) binding.eventRecycler.scrollToPosition(eventList.size() - 1);
     }
 
     @Override
