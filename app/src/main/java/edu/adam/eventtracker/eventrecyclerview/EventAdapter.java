@@ -49,20 +49,20 @@ public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
 
     private String displayReviewStars(int rating) {
 
-        String[] eventCategories = mainAct.getResources().getStringArray(R.array.event_cats);
+        String[] eventStars = mainAct.getResources().getStringArray(R.array.event_ratings);
 
 
         switch (rating) {
             case 1:
-                return eventCategories[0];
+                return eventStars[0];
             case 2:
-                return eventCategories[1];
+                return eventStars[1];
             case 3:
-                return eventCategories[2];
+                return eventStars[2];
             case 4:
-                return eventCategories[3];
+                return eventStars[3];
             default:
-                return eventCategories[4];
+                return eventStars[4];
         }
     }
 

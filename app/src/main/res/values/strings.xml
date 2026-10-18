@@ -5,6 +5,7 @@
     <!--  Ratings  -->
 
     <string-array name="event_ratings">
+        <item name="rating_heading">Select rating</item>
         <item name="star1">1 ★☆☆☆☆</item>
         <item name="star2">2 ★★☆☆☆</item>
         <item name="star3">3 ★★★☆☆</item>
@@ -49,6 +50,7 @@
 
     <!-- Event categories -->
     <string-array name="event_cats">
+        <item>Select event type</item>
         <item>Bar</item>
         <item>Beach</item>
         <item>Cafe</item>
@@ -64,7 +66,5 @@
         <item>Sports</item>
         <item>Theater</item>
     </string-array>
-
-
 
 </resources>

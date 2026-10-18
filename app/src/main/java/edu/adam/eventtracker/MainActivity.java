@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -106,12 +107,10 @@ public class MainActivity extends AppCompatActivity
     private void populateEventList() {
         // Auto-returns new empty ArrayList if it couldn't read a file or if one didn't already exist
         List<Event> existingEvents = this.loadEvents();
-        if (!existingEvents.isEmpty()) this.eventList.addAll(existingEvents);
-
-        // If there is no data, use the dummy event data
-        else populateRecyclerDummyData();
-
-        eventAdapter.notifyDataSetChanged();
+        if (!existingEvents.isEmpty()) {
+            this.eventList.addAll(existingEvents);
+            eventAdapter.notifyDataSetChanged();
+        }
     }
 
     private void setUpCategorySpinner() {
@@ -229,18 +228,27 @@ public class MainActivity extends AppCompatActivity
     private void handleSaveIntentResult(ActivityResult res) {
         if (res == null || res.getData() == null) {
             Log.d(TAG, getString(R.string.intent_result_is_null));
-        }
-        else {
+        } else {
             Intent data = res.getData();
             if (res.getResultCode() == RESULT_OK) {
-                Event event = data.getSerializableExtra(getString(R.string.saved_event), Event.class);
-                if (event != null) eventList.add(0, event);
-                saveEventList();
-                binding.eventRecycler.scrollToPosition(0);
-                return;
+                Event event = data.getSerializableExtra(getString(R.string.edit_event), Event.class);
+                int pos = data.getIntExtra("INDEX", -1);
+                if (event != null) {
+                    if (pos < 0) {
+                        eventList.add(0, event);
+                        eventAdapter.notifyItemInserted(0);
+                    }
+                    else {
+                        eventList.set(pos, event);
+                        eventAdapter.notifyItemChanged(pos);
+                    }
+                    saveEventList();
+                    binding.eventRecycler.scrollToPosition(Math.max(0, pos));
+                    return;
+                }
             }
+            Toast.makeText(this, R.string.event_not_saved, Toast.LENGTH_LONG).show();
         }
-        Toast.makeText(this, R.string.event_not_saved, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -249,7 +257,23 @@ public class MainActivity extends AppCompatActivity
         Intent intent = new Intent(MainActivity.this, EditActivity.class);
         Event toEdit = eventList.get(pos);
         intent.putExtra(getString(R.string.edit_event), toEdit);
+        // Persists to let adapter know the position of the item being edited afterwards
         intent.putExtra("INDEX", pos);
+        arl.launch(intent);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+        if (itemId == R.id.add_event_button) {
+            createEvent();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void createEvent() {
+        Intent intent = new Intent(MainActivity.this, EditActivity.class);
         arl.launch(intent);
     }
 
@@ -257,7 +281,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onLongClick(View v) {
         int pos = binding.eventRecycler.getChildLayoutPosition(v);
-        if (pos < 0) {
+        if (pos <= 0) {
             Log.d(TAG, getString(R.string.invalid_selection));
         }
         new AlertDialog.Builder(this)
@@ -298,22 +322,6 @@ public class MainActivity extends AppCompatActivity
     public void onStop() {
         saveEventList();
         super.onStop();
-    }
-
-    private void populateRecyclerDummyData() {
-        List<Event> events = Arrays.asList(
-                new Event("CAFE", "Morning Coffee Meetup", "Blue Bottle Cafe", "2026-10-18", "Catching up with old friends", 4),
-                new Event("PARK", "Weekend Picnic", "Millennium Park", "2026-10-19", "Enjoying the autumn weather", 5),
-                new Event("CINEMA", "Movie Night", "AMC Downtown", "2026-10-20", "Watching the latest sci-fi release", 3),
-                new Event("RESTAURANT", "Dinner with Colleagues", "Trattoria Roma", "2026-10-22", "Celebrating project launch", 5),
-                new Event("CONCERT", "Rock Band Live", "City Arena", "2026-10-25", "Front row tickets", 4),
-                new Event("MUSEUM", "Modern Art Exhibition", "Metropolitan Museum", "2026-10-27", "Exploring abstract paintings", 4),
-                new Event("BAR", "Trivia Night", "The Local Pub", "2026-10-28", "Came in second place", 4),
-                new Event("BEACH", "Sunset Walk", "South Beach", "2026-10-30", "Relaxing by the water", 5),
-                new Event("THEATER", "Shakespearean Play", "State Playhouse", "2026-11-02", "Fantastic acting and stage design", 5),
-                new Event("SPORTS", "Football Match", "City Stadium", "2026-11-05", "Home team won in overtime", 4)
-        );
-        this.eventList.addAll(events);
     }
 
 

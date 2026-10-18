@@ -101,7 +101,6 @@ public class EditActivity extends AppCompatActivity {
     }
 
     // Technically only one item, so can default to on-click. But for the sake of extensibility
-    //TODO make clickable
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.save_icon) editEvent();
@@ -115,18 +114,27 @@ public class EditActivity extends AppCompatActivity {
             // Maintain event's position in list
             int pos = intent.getIntExtra("INDEX", -1);
             // If there's no string resource of that name, we can't return to a random index, so we exit
-            if (pos == -1) {
-                Log.d(getString(R.string.edit_activity), getString(R.string.invalid_edit_position));
-                setResult(RESULT_CANCELED, intent);
-                finish();
-                return;
-            }
+            if (pos == -1) return;
 
             binding.eventNameField.setText(event.getName());
             binding.eventAddressField.setText(event.getLocation());
             binding.eventDateField.setText(event.getDate());
             binding.eventNotesField.setText(event.getNotes());
+            binding.editStarsSpinner.setSelection(event.getRating());
+
+            int typePosition = getEventTypeSpinnerIndex();
+            // handles any accidental call for getEventTypeSpinner
+            binding.editEventTypeSpinner.setSelection(Math.max(typePosition, 1));
         }
+    }
+
+    private int getEventTypeSpinnerIndex() {
+        String[] eventTypes = getResources().getStringArray(R.array.event_cats);
+        // Skips default spinner value
+        for (int i = 1; i < eventTypes.length; i++) {
+            if (eventTypes[i].equals(event.getType())) return i;
+        }
+        return -1;
     }
 
     public void editEvent() {
@@ -156,6 +164,8 @@ public class EditActivity extends AppCompatActivity {
 
         Intent returnData = new Intent();
         returnData.putExtra(getString(R.string.edit_event), this.event);
+        // Re-extract original event list position
+        if (!isNewEvent) returnData.putExtra("INDEX", intent.getIntExtra("INDEX", -1));
         setResult(RESULT_OK, returnData);
         finish();
     }
