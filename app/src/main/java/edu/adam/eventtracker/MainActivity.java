@@ -43,13 +43,12 @@ import edu.adam.eventtracker.eventrecyclerview.EventAdapter;
 public class MainActivity extends AppCompatActivity
         implements View.OnClickListener, View.OnLongClickListener {
 
-    private ActivityMainBinding binding;
-    private final List<Event> eventList = new ArrayList<>();
-    private EventAdapter eventAdapter;
-    private LinearLayoutManager linearLayoutManager;
-    private ActivityResultLauncher<Intent> arl;
-    private String TAG = getString(R.string.main_activity);
-
+    ActivityMainBinding binding;
+    final List<Event> eventList = new ArrayList<>();
+    EventAdapter eventAdapter;
+    LinearLayoutManager linearLayoutManager;
+    ActivityResultLauncher<Intent> arl;
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

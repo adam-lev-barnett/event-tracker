@@ -28,10 +28,10 @@ import edu.adam.eventtracker.event.Event;
 
 public class EditActivity extends AppCompatActivity {
 
-    private ActivityEditBinding binding;
-    private Event event;
-    private final String TAG = getString(R.string.edit_activity);
-    private Intent intent;
+    ActivityEditBinding binding;
+    Event event;
+    static final String TAG = "EditActivity";
+    Intent intent;
 
 
     @Override
@@ -50,18 +50,14 @@ public class EditActivity extends AppCompatActivity {
         setUpEventStarsSpinner();
 
         intent = getIntent();
+
         if (intent != null) {
             // Will finish with a cancel status if null checks, etc. fail
-            populateFields();
             event = intent.getSerializableExtra(getString(R.string.edit_event), Event.class);
+            populateFields();
         }
 
-        else {
-            intent = new Intent();
-        }
-
-
-
+        else intent = new Intent();
     }
 
     @Override
@@ -91,12 +87,12 @@ public class EditActivity extends AppCompatActivity {
         ArrayAdapter<CharSequence> eventTypeAdapter = ArrayAdapter
                 .createFromResource(this, R.array.event_ratings, android.R.layout.simple_spinner_item);
         eventTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        binding.editEventTypeSpinner.setAdapter(eventTypeAdapter);
+        binding.editStarsSpinner.setAdapter(eventTypeAdapter);
 
-        binding.editEventTypeSpinner.setSelection(0);
+        binding.editStarsSpinner.setSelection(0);
 
         // This doesn't need to do anything because all it does is select the item
-        binding.editEventTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        binding.editStarsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {}
             @Override
@@ -108,10 +104,7 @@ public class EditActivity extends AppCompatActivity {
     //TODO make clickable
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.save_icon) {
-            boolean isNewEvent = intent.hasExtra(getString(R.string.INDEX));
-            else editEvent();
-        }
+        if (item.getItemId() == R.id.save_icon) editEvent();
         return super.onOptionsItemSelected(item);
     }
 
@@ -120,8 +113,7 @@ public class EditActivity extends AppCompatActivity {
         // If it can't deserialize
         if (event != null) {
             // Maintain event's position in list
-            int pos = intent.getIntExtra(getString((R.string.INDEX)), -1);
-
+            int pos = intent.getIntExtra("INDEX", -1);
             // If there's no string resource of that name, we can't return to a random index, so we exit
             if (pos == -1) {
                 Log.d(getString(R.string.edit_activity), getString(R.string.invalid_edit_position));
@@ -148,8 +140,7 @@ public class EditActivity extends AppCompatActivity {
         int rating = binding.editStarsSpinner.getSelectedItemPosition();
 
         // a new event won't have a position from the recyclerview yet
-        boolean isNewEvent = intent.hasExtra(getString(R.string.INDEX));
-
+        boolean isNewEvent = !intent.hasExtra("INDEX");
 
         if (!isNewEvent) {
             event.setRating(rating);
@@ -201,7 +192,6 @@ public class EditActivity extends AppCompatActivity {
                     R.string.please_fill_out_the_requested_fields,
                     Toast.LENGTH_LONG).show();
         }
-
         return isValid;
     }
 
