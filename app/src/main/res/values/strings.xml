@@ -60,6 +60,8 @@
     <string name="event_list">event_list</string>
     <string name="rating_filter_pos">rating_filter_pos</string>
     <string name="category_filter_pos">category_filter_pos</string>
+    <string name="copyright">©2026, Adam Barnett</string>
+    <string name="version_1_0">Version 1.0</string>
 
     <!-- Event categories -->
     <string-array name="event_cats">

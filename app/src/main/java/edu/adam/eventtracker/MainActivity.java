@@ -272,7 +272,7 @@ public class MainActivity extends AppCompatActivity
         Intent intent = new Intent(MainActivity.this, EditActivity.class);
         Event toEdit = eventList.get(pos);
         intent.putExtra(getString(R.string.edit_event), toEdit);
-        // Persists to let adapter know the position of the item being edited afterwards
+        // Persists to let adapter know the position of the item being edited afterward
         intent.putExtra("INDEX", pos);
         arl.launch(intent);
     }
