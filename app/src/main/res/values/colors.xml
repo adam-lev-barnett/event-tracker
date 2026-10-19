@@ -4,4 +4,9 @@
     <color name="white">#FFFFFFFF</color>
     <color name="edit_activity_bg">#B2EBF2</color>
     <color name="error_field">#D00000</color>
+    <color name="red_shadow">#DD2C00</color>
+    <color name="toolbar_blue">#2962FF</color>
+    <color name="main_background">#9389F2</color>
+    <color name="toolbar_background">#1A237E</color>
+    <color name="text_field">#8C9EFF</color>
 </resources>
