@@ -38,6 +38,22 @@ public class Event implements Serializable {
         setType(type);
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
     public String getType() {
         return type;
     }
@@ -62,14 +78,14 @@ public class Event implements Serializable {
         return rating;
     }
 
-    private void setRating(int rating) {
+    public void setRating(int rating) {
         if (rating <= 0) this.rating = 1;
         else if (rating > 5) this.rating = 5;
         else this.rating = rating;
     }
 
     // Ensures that the event type string comes out with the first letter capitalized
-    private void setType(String eventType) {
+    public void setType(String eventType) {
         if (eventType != null && !eventType.isEmpty()) {
             this.type = Character.toUpperCase(eventType.charAt(0)) +
                     eventType.substring(1).toLowerCase();

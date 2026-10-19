@@ -3,30 +3,67 @@
     <string name="event_count">Event Count: %d</string>
 
     <!--  Ratings  -->
-    <string name="star1">1 ★☆☆☆☆</string>
-    <string name="star2">2 ★★☆☆☆</string>
-    <string name="star3">3 ★★★☆☆</string>
-    <string name="star4">4 ★★★★☆</string>
-    <string name="star5">5 ★★★★★</string>
 
     <string-array name="event_ratings">
-        <item>&lt;Select Star Rating&gt;</item>
-        <item>@string/star1</item>
-        <item>@string/star2</item>
-        <item>@string/star3</item>
-        <item>@string/star4</item>
-        <item>@string/star5</item>
+        <item name="RATING_SPINNER_LABEL">Select rating</item>
+        <item name="star1">1 ★☆☆☆☆</item>
+        <item name="star2">2 ★★☆☆☆</item>
+        <item name="star3">3 ★★★☆☆</item>
+        <item name="star4">4 ★★★★☆</item>
+        <item name="star5">5 ★★★★★</item>
     </string-array>
 
+    <string name="main_activity">Main Activity</string>
     <string name="bar">bar</string>
     <string name="todo">TODO</string>
     <string name="no_file_content_exists">No file content could exists</string>
     <string name="could_not_load_events">Could not load events</string>
     <string name="could_not_save_event_list">Could not save event list</string>
+    <string name="about_button">about_button</string>
+    <string name="add_event_button">add_event_button</string>
+    <string name="save_icon">save_icon</string>
+    <string name="save_event">SAVE_EVENT</string>
+    <string name="intent_result_is_null">Intent result is null</string>
+    <string name="event_not_saved">Could not save event</string>
+    <string name="saved_event">SAVED_EVENT</string>
+    <string name="edit_event">EDIT_EVENT</string>
+    <string name="could_not_delete_bad_index">Could not delete event because of bad position identifier</string>
+    <string name="delete_event">Delete Event</string>
+    <string name="invalid_selection">Invalid selection</string>
+    <string name="delete_confirm">Are you sure you want to delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
+    <string name="IS_NEW_EVENT">isNewEvent</string>
+    <string name="INDEX">index</string>
+    <string name="edit_activity">EDIT_ACTIVITY</string>
+    <string name="invalid_edit_position">Invalid index position provided for edited event</string>
+    <string name="write_any_notes_here">Write any notes here</string>
+    <string name="mm_dd_yyyy">MM/DD/YYYY</string>
+    <string name="address">Address</string>
+    <string name="event_name">Event name</string>
+    <string name="date_format">^\\d{2}/\\d{2}/\\d{4}$</string>
+    <string name="date_time_parse_format">MM/dd/uuuu</string>
+    <string name="please_fill_out_the_requested_fields">Please fill out the requested fields</string>
+    <string name="dummy_event_name">Valid Event</string>
+    <string name="dummy_event_address">123 Tech Ave</string>
+    <string name="adding">"Adding "</string>
+    <string name="event_list_saved">Event list saved</string>
+    <string name="list_loaded">List loaded</string>
+    <string name="adapter_notified_of_insert_of_event">"Adapter notified of insert of event: "</string>
+    <string name="is_new_event">IS_NEW_EVENT</string>
+    <string name="could_not_remove_item">Could not remove item</string>
+    <string name="invalid_index_for_event_removal">"Invalid index for event removal: "</string>
+    <string name="save">Save</string>
+    <string name="save_event_prompt">Do you want to save your event?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="event_list">event_list</string>
+    <string name="rating_filter_pos">rating_filter_pos</string>
+    <string name="category_filter_pos">category_filter_pos</string>
 
     <!-- Event categories -->
     <string-array name="event_cats">
-        <item>&lt;Select Event Type&gt;</item>
+        <item name="TYPE_SPINNER_LABEL">Select event type</item>
         <item>Bar</item>
         <item>Beach</item>
         <item>Cafe</item>
@@ -42,7 +79,5 @@
         <item>Sports</item>
         <item>Theater</item>
     </string-array>
-
-
 
 </resources>
