@@ -229,7 +229,6 @@ public class MainActivity extends AppCompatActivity
             PrintWriter printer = new PrintWriter(outputStream);
             printer.print(eventList.toString());
             printer.close();
-            Toast.makeText(this, R.string.event_list_saved, Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             Toast.makeText(this, R.string.could_not_save_event_list, Toast.LENGTH_LONG).show();
         }
@@ -323,15 +322,27 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        // Preserve the master event list across rotations
+        outState.putSerializable(getString(R.string.event_list), (ArrayList<Event>) eventList);
 
+        // Preserve filter spinner selections
+        outState.putInt(getString(R.string.category_filter_pos), binding.categorySpinner.getSelectedItemPosition());
+        outState.putInt(getString(R.string.rating_filter_pos), binding.ratingSpinner.getSelectedItemPosition());
         super.onSaveInstanceState(outState);
     }
 
     @Override
-    public void onRestoreInstanceState(Bundle inState) {
+    protected void onRestoreInstanceState(@NonNull Bundle inState) {
         super.onRestoreInstanceState(inState);
 
+        // Restore spinner positions
+        int catPos = inState.getInt(getString(R.string.category_filter_pos), 0);
+        int ratePos = inState.getInt(getString(R.string.rating_filter_pos), 0);
+
+        binding.categorySpinner.setSelection(catPos);
+        binding.ratingSpinner.setSelection(ratePos);
+        applyFilters();
     }
 
     @Override

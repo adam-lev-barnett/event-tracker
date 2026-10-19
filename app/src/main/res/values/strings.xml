@@ -57,6 +57,9 @@
     <string name="save_event_prompt">Do you want to save your event?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="event_list">event_list</string>
+    <string name="rating_filter_pos">rating_filter_pos</string>
+    <string name="category_filter_pos">category_filter_pos</string>
 
     <!-- Event categories -->
     <string-array name="event_cats">
