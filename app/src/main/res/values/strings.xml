@@ -5,7 +5,7 @@
     <!--  Ratings  -->
 
     <string-array name="event_ratings">
-        <item name="rating_heading">Select rating</item>
+        <item name="RATING_SPINNER_LABEL">Select rating</item>
         <item name="star1">1 ★☆☆☆☆</item>
         <item name="star2">2 ★★☆☆☆</item>
         <item name="star3">3 ★★★☆☆</item>
@@ -30,7 +30,7 @@
     <string name="could_not_delete_bad_index">Could not delete event because of bad position identifier</string>
     <string name="delete_event">Delete Event</string>
     <string name="invalid_selection">Invalid selection</string>
-    <string name="delete_confirm">Are you sure you want to delete </string>
+    <string name="delete_confirm">Are you sure you want to delete</string>
     <string name="cancel">Cancel</string>
     <string name="confirm">Confirm</string>
     <string name="IS_NEW_EVENT">isNewEvent</string>
@@ -46,11 +46,21 @@
     <string name="please_fill_out_the_requested_fields">Please fill out the requested fields</string>
     <string name="dummy_event_name">Valid Event</string>
     <string name="dummy_event_address">123 Tech Ave</string>
-
+    <string name="adding">"Adding "</string>
+    <string name="event_list_saved">Event list saved</string>
+    <string name="list_loaded">List loaded</string>
+    <string name="adapter_notified_of_insert_of_event">"Adapter notified of insert of event: "</string>
+    <string name="is_new_event">IS_NEW_EVENT</string>
+    <string name="could_not_remove_item">Could not remove item</string>
+    <string name="invalid_index_for_event_removal">"Invalid index for event removal: "</string>
+    <string name="save">Save</string>
+    <string name="save_event_prompt">Do you want to save your event?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
     <!-- Event categories -->
     <string-array name="event_cats">
-        <item>Select event type</item>
+        <item name="TYPE_SPINNER_LABEL">Select event type</item>
         <item>Bar</item>
         <item>Beach</item>
         <item>Cafe</item>

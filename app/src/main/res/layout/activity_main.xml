@@ -55,13 +55,15 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/event_recycler"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginTop="8dp"
+        android:overScrollMode="ifContentScrolls"
+        android:scrollbars="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/category_spinner"
         tools:itemCount="4"
-        tools:listitem="@layout/event_list_row"
-        />
+        tools:listitem="@layout/event_list_row" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

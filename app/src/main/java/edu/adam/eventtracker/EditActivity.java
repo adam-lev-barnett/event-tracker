@@ -2,16 +2,17 @@ package edu.adam.eventtracker;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
+import android.window.OnBackInvokedDispatcher;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -49,14 +50,15 @@ public class EditActivity extends AppCompatActivity {
         setUpEventTypeSpinner();
         setUpEventStarsSpinner();
 
-        intent = getIntent();
+        getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+                OnBackInvokedDispatcher.PRIORITY_DEFAULT,
+                this::backInvoked);
 
+        intent = getIntent();
         if (intent != null) {
-            // Will finish with a cancel status if null checks, etc. fail
             event = intent.getSerializableExtra(getString(R.string.edit_event), Event.class);
             populateFields();
         }
-
         else intent = new Intent();
     }
 
@@ -87,12 +89,12 @@ public class EditActivity extends AppCompatActivity {
         ArrayAdapter<CharSequence> eventTypeAdapter = ArrayAdapter
                 .createFromResource(this, R.array.event_ratings, android.R.layout.simple_spinner_item);
         eventTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        binding.editStarsSpinner.setAdapter(eventTypeAdapter);
+        binding.editEventRatingSpinner.setAdapter(eventTypeAdapter);
 
-        binding.editStarsSpinner.setSelection(0);
+        binding.editEventRatingSpinner.setSelection(0);
 
         // This doesn't need to do anything because all it does is select the item
-        binding.editStarsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        binding.editEventRatingSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {}
             @Override
@@ -103,7 +105,7 @@ public class EditActivity extends AppCompatActivity {
     // Technically only one item, so can default to on-click. But for the sake of extensibility
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.save_icon) editEvent();
+        if (item.getItemId() == R.id.save_icon) submitEvent();
         return super.onOptionsItemSelected(item);
     }
 
@@ -120,7 +122,7 @@ public class EditActivity extends AppCompatActivity {
             binding.eventAddressField.setText(event.getLocation());
             binding.eventDateField.setText(event.getDate());
             binding.eventNotesField.setText(event.getNotes());
-            binding.editStarsSpinner.setSelection(event.getRating());
+            binding.editEventRatingSpinner.setSelection(event.getRating());
 
             int typePosition = getEventTypeSpinnerIndex();
             // handles any accidental call for getEventTypeSpinner
@@ -137,21 +139,33 @@ public class EditActivity extends AppCompatActivity {
         return -1;
     }
 
-    public void editEvent() {
+    public void backInvoked() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.save);
+        builder.setMessage(R.string.save_event_prompt);
+        builder.setPositiveButton(getString(R.string.yes), (dialog, id) -> submitEvent());
+        builder.setNegativeButton(R.string.no, (dialog, id) -> finish());
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void submitEvent() {
         String name = binding.eventNameField.getText().toString().trim();
         String date = binding.eventDateField.getText().toString().trim();
         String address = binding.eventAddressField.getText().toString().trim();
         String type = binding.editEventTypeSpinner.getSelectedItem().toString();
-        if (!validateAndHighlightForm(name, date, address, type)) return;
+        int typePos = binding.editEventTypeSpinner.getSelectedItemPosition();
+        int ratingPos = binding.editEventRatingSpinner.getSelectedItemPosition();
+
+        if (!validateAndHighlightForm(name, date, address, type, typePos, ratingPos)) return;
 
         String notes = binding.eventNotesField.getText().toString().trim();
-        int rating = binding.editStarsSpinner.getSelectedItemPosition();
 
         // a new event won't have a position from the recyclerview yet
         boolean isNewEvent = !intent.hasExtra("INDEX");
 
         if (!isNewEvent) {
-            event.setRating(rating);
+            event.setRating(ratingPos);
             event.setName(name);
             event.setDate(date);
             event.setLocation(address);
@@ -159,18 +173,19 @@ public class EditActivity extends AppCompatActivity {
             event.setNotes(notes);
         }
         else {
-            this.event = new Event(type, name, address, date, notes, rating);
+            this.event = new Event(type, name, address, date, notes, ratingPos);
         }
 
         Intent returnData = new Intent();
+        returnData.putExtra(getString(R.string.is_new_event), isNewEvent);
         returnData.putExtra(getString(R.string.edit_event), this.event);
         // Re-extract original event list position
-        if (!isNewEvent) returnData.putExtra("INDEX", intent.getIntExtra("INDEX", -1));
+        if (!isNewEvent) returnData.putExtra(getString(R.string.INDEX), intent.getIntExtra("INDEX", -1));
         setResult(RESULT_OK, returnData);
         finish();
     }
 
-    private boolean validateAndHighlightForm(String name, String date, String address, String type) {
+    private boolean validateAndHighlightForm(String name, String date, String address, String type, int typePos, int ratingPos) {
         boolean isValid = true;
 
         if (name.isEmpty()) {
@@ -194,13 +209,23 @@ public class EditActivity extends AppCompatActivity {
             binding.eventAddressField.setBackgroundResource(R.drawable.normal_edit_text_border);
         }
 
-        if (type.isEmpty()) isValid = false;
+        if (type.isEmpty() || typePos <= 0) {
+            binding.editEventTypeSpinner.setBackgroundResource(R.drawable.error_edit_text_border);
+            isValid = false;
+        } else {
+            binding.editEventTypeSpinner.setBackgroundResource(R.drawable.normal_edit_text_border);
+        }
 
-        // User Feedback
+        if (ratingPos <= 0) {
+            binding.editEventRatingSpinner.setBackgroundResource(R.drawable.error_edit_text_border);
+            isValid = false;
+        } else {
+            binding.editEventRatingSpinner.setBackgroundResource(R.drawable.normal_edit_text_border);
+        }
+
         if (!isValid) {
             Toast.makeText(this,
-                    R.string.please_fill_out_the_requested_fields,
-                    Toast.LENGTH_LONG).show();
+                    R.string.please_fill_out_the_requested_fields, Toast.LENGTH_LONG).show();
         }
         return isValid;
     }

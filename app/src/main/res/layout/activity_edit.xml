@@ -62,7 +62,7 @@
         app:layout_constraintTop_toBottomOf="@+id/edit_event_type_spinner" />
 
     <Spinner
-        android:id="@+id/edit_stars_spinner"
+        android:id="@+id/edit_event_rating_spinner"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -84,7 +84,7 @@
         android:background="@color/edit_activity_bg"
         android:paddingHorizontal="8dp"
         android:paddingVertical="8dp"
-        app:layout_constraintEnd_toStartOf="@+id/edit_stars_spinner"
+        app:layout_constraintEnd_toStartOf="@+id/edit_event_rating_spinner"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/event_name_field" />
 

@@ -1,7 +1,9 @@
 package edu.adam.eventtracker.eventrecyclerview;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,6 +19,7 @@ import edu.adam.eventtracker.event.Event;
 public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
     public List<Event> events;
     private final MainActivity mainAct;
+    public static String TAG = "EventAdapter";
 
 
 
@@ -50,20 +53,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
     private String displayReviewStars(int rating) {
 
         String[] eventStars = mainAct.getResources().getStringArray(R.array.event_ratings);
-
-
-        switch (rating) {
-            case 1:
-                return eventStars[0];
-            case 2:
-                return eventStars[1];
-            case 3:
-                return eventStars[2];
-            case 4:
-                return eventStars[3];
-            default:
-                return eventStars[4];
-        }
+        return eventStars[rating];
     }
 
     // Used for fully updating the adapter's collection or filtering
@@ -73,7 +63,35 @@ public class EventAdapter extends RecyclerView.Adapter<EventViewHolder> {
             this.events.addAll(newList);
             this.notifyDataSetChanged();
         }
+    }
 
+    public void removeEvent(int i) {
+        if (i >= 0 && i < events.size()) events.remove(i);
+        else {
+            Toast.makeText(mainAct, R.string.could_not_remove_item, Toast.LENGTH_LONG).show();
+            Log.d(TAG, mainAct.getString(R.string.invalid_index_for_event_removal) + ": " + i);
+        }
+        notifyItemRemoved(i);
+    }
+
+    public void loadEvents(List<Event> eventList) {
+        events.clear();
+        events.addAll(eventList);
+        notifyDataSetChanged();
+    }
+
+    public void addEventAtTop(Event event) {
+        if (event != null) {
+            this.events.add(0, event);
+            notifyItemInserted(0);
+        }
+    }
+
+    public void updateEventAt(int position, Event event) {
+        if (event != null && position >= 0 && position < this.events.size()) {
+            this.events.set(position, event);
+            notifyItemChanged(position);
+        }
     }
 
     /** Method specifically called by activity for completely resetting the filters. Passes original list */

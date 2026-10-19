@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
+import android.window.OnBackInvokedDispatcher;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResult;
@@ -109,7 +110,7 @@ public class MainActivity extends AppCompatActivity
         List<Event> existingEvents = this.loadEvents();
         if (!existingEvents.isEmpty()) {
             this.eventList.addAll(existingEvents);
-            eventAdapter.notifyDataSetChanged();
+            this.eventAdapter.loadEvents(eventList);
         }
     }
 
@@ -168,15 +169,17 @@ public class MainActivity extends AppCompatActivity
         int selectedEventType = binding.categorySpinner.getSelectedItemPosition();
         int selectedRating = binding.ratingSpinner.getSelectedItemPosition();
 
-        String selectedCategory = (selectedEventType >= 0) ?
+        String selectedCategory = (selectedEventType > 0) ?
                 binding.categorySpinner.getSelectedItem().toString() : null;
+
+        int minRating = (selectedRating > 0) ? selectedRating : -1;
 
         // OR short circuits to no filters - applied by default
         List<Event> filtered = eventList.stream()
                 .filter(e -> selectedCategory == null ||
                         selectedCategory.equalsIgnoreCase(e.getType()))
-                .filter(e -> selectedRating < 0 ||
-                        e.getRating() >= selectedRating)
+                .filter(e -> minRating < 0 ||
+                        e.getRating() >= minRating)
                 .collect(Collectors.toList());
 
         eventAdapter.setFilters(filtered);
@@ -185,6 +188,9 @@ public class MainActivity extends AppCompatActivity
 
     public void clearFilters(View v) {
         this.eventAdapter.setFilters(eventList);
+        // Sets the spinners back to default in the UI
+        binding.categorySpinner.setSelection(0);
+        binding.ratingSpinner.setSelection(0);
     }
 
     private List<Event> loadEvents() {
@@ -207,6 +213,9 @@ public class MainActivity extends AppCompatActivity
             Event[] events = gson.fromJson(sb.toString(), Event[].class);
             List<Event> tempEventList = new ArrayList<>();
             Collections.addAll(tempEventList, events);
+
+            Log.d(TAG, getString(R.string.list_loaded));
+
             return tempEventList;
         } catch (Exception e) {
             Toast.makeText(this, R.string.could_not_load_events, Toast.LENGTH_LONG).show();
@@ -220,6 +229,7 @@ public class MainActivity extends AppCompatActivity
             PrintWriter printer = new PrintWriter(outputStream);
             printer.print(eventList.toString());
             printer.close();
+            Toast.makeText(this, R.string.event_list_saved, Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             Toast.makeText(this, R.string.could_not_save_event_list, Toast.LENGTH_LONG).show();
         }
@@ -230,20 +240,26 @@ public class MainActivity extends AppCompatActivity
             Log.d(TAG, getString(R.string.intent_result_is_null));
         } else {
             Intent data = res.getData();
+
             if (res.getResultCode() == RESULT_OK) {
                 Event event = data.getSerializableExtra(getString(R.string.edit_event), Event.class);
-                int pos = data.getIntExtra("INDEX", -1);
-                if (event != null) {
-                    if (pos < 0) {
+                int pos = data.getIntExtra(getString(R.string.INDEX), -1);
+                boolean isNewEvent = data.getBooleanExtra(getString(R.string.is_new_event), false);
+
+                if (event != null && (isNewEvent || pos >= 0)) {
+                    if (isNewEvent) {
                         eventList.add(0, event);
-                        eventAdapter.notifyItemInserted(0);
-                    }
-                    else {
+                        eventAdapter.addEventAtTop(event);
+                        binding.eventRecycler.scrollToPosition(0);
+                        Log.d(TAG, getString(R.string.adapter_notified_of_insert_of_event) + event.getName());
+                    } else {
                         eventList.set(pos, event);
-                        eventAdapter.notifyItemChanged(pos);
+                        eventAdapter.updateEventAt(pos, event);
+                        binding.eventRecycler.scrollToPosition(pos);
+                        Log.d(TAG, getString(R.string.adapter_notified_of_insert_of_event) + event.getName());
                     }
+                    updateToolbarEventCount();
                     saveEventList();
-                    binding.eventRecycler.scrollToPosition(Math.max(0, pos));
                     return;
                 }
             }
@@ -286,7 +302,7 @@ public class MainActivity extends AppCompatActivity
         }
         new AlertDialog.Builder(this)
             .setTitle(R.string.delete_event)
-            .setMessage(getString(R.string.delete_confirm) + eventList.get(pos).getName())
+            .setMessage(getString(R.string.delete_confirm) + ": " + eventList.get(pos).getName())
                 // Cancelling the action just closes the dialog
             .setNegativeButton(getString(R.string.cancel), null)
             .setPositiveButton(getString(
@@ -302,7 +318,7 @@ public class MainActivity extends AppCompatActivity
             return;
         }
         eventList.remove(i);
-        eventAdapter.notifyItemRemoved(i);
+        eventAdapter.removeEvent(i);
         if (i >= eventList.size()) binding.eventRecycler.scrollToPosition(eventList.size() - 1);
     }
 
