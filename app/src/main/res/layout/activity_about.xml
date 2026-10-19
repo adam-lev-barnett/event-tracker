@@ -5,7 +5,6 @@
     android:id="@+id/about_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background=""
     tools:context=".AboutActivity">
 
     <ImageView
@@ -26,7 +25,7 @@
         android:layout_marginStart="168dp"
         android:layout_marginTop="72dp"
         android:layout_marginEnd="159dp"
-        android:shadowColor="#FF0055"
+        android:shadowColor="@color/red_shadow"
         android:shadowDx="8"
         android:shadowDy="8"
         android:shadowRadius="2"
@@ -44,7 +43,7 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
-        android:shadowColor="#DD2C00"
+        android:shadowColor="@color/red_shadow"
         android:shadowDx="0"
         android:shadowDy="0"
         android:shadowRadius="20"
@@ -64,6 +63,8 @@
         android:text="@string/version_1_0"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textStyle="bold"
+        android:shadowColor="@color/red_shadow"
+
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -5,6 +5,7 @@
     android:id="@+id/edit_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/main_background"
     tools:context=".EditActivity">
 
 
@@ -12,7 +13,7 @@
         android:id="@+id/edit_act_toolbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
+        android:background="@color/toolbar_background"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
         android:touchscreenBlocksFocus="false"
@@ -20,10 +21,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:subtitleTextAppearance="@style/TextAppearance.AppCompat.Body2"
-        app:subtitleTextColor="#000000"
+        app:subtitleTextColor="#FFFFFFFF"
         app:title="@string/app_name"
         app:titleTextAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:titleTextColor="#000000" />
+        app:titleTextColor="#FFFFFFFF" />
 
     <EditText
         android:id="@+id/event_name_field"

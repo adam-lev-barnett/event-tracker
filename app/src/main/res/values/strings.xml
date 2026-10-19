@@ -62,6 +62,7 @@
     <string name="category_filter_pos">category_filter_pos</string>
     <string name="copyright">©2026, Adam Barnett</string>
     <string name="version_1_0">Version 1.0</string>
+    <string name="event_heading">Event heading</string>
 
     <!-- Event categories -->
     <string-array name="event_cats">

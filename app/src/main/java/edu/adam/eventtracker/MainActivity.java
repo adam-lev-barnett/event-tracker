@@ -118,8 +118,8 @@ public class MainActivity extends AppCompatActivity
         ArrayAdapter<CharSequence> catAdapter =
                 ArrayAdapter.createFromResource(this,
                         R.array.event_cats,
-                        android.R.layout.simple_spinner_item);
-        catAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        R.layout.spinner_row_layout);
+        catAdapter.setDropDownViewResource(R.layout.spinner_row_layout);
         binding.categorySpinner.setAdapter(catAdapter);
         binding.categorySpinner.setSelection(0);
 
@@ -142,8 +142,8 @@ public class MainActivity extends AppCompatActivity
         ArrayAdapter<CharSequence> rateAdapter =
                 ArrayAdapter.createFromResource(this,
                         R.array.event_ratings,
-                        android.R.layout.simple_spinner_item);
-        rateAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        R.layout.spinner_row_layout);
+        rateAdapter.setDropDownViewResource(R.layout.spinner_row_layout);
         binding.ratingSpinner.setAdapter(rateAdapter);
         binding.ratingSpinner.setSelection(0);
 
@@ -284,6 +284,11 @@ public class MainActivity extends AppCompatActivity
             createEvent();
             return true;
         }
+        else if (itemId == R.id.about_button) {
+            Intent intent = new Intent(this, AboutActivity.class);
+            startActivity(intent);
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
